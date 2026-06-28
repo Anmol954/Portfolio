@@ -379,6 +379,127 @@
 }
 .animate-float { animation: float-up 3s ease-in-out infinite; }
 
+/* ─── Cinematic: Neon glow breath ─── */
+@keyframes neon-breath-cyan {
+  0%, 100% {
+    text-shadow:
+      0 0 5px rgba(0, 240, 255, 0.8),
+      0 0 10px rgba(0, 240, 255, 0.6),
+      0 0 20px rgba(0, 240, 255, 0.4),
+      0 0 40px rgba(0, 240, 255, 0.15);
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow:
+      0 0 8px rgba(0, 240, 255, 1),
+      0 0 20px rgba(0, 240, 255, 0.9),
+      0 0 40px rgba(0, 240, 255, 0.7),
+      0 0 80px rgba(0, 240, 255, 0.4),
+      0 0 120px rgba(0, 240, 255, 0.2);
+    filter: brightness(1.2);
+  }
+}
+.animate-neon-breath { animation: neon-breath-cyan 3s ease-in-out infinite; }
+
+/* ─── Cinematic: Scan sweep light ─── */
+@keyframes scan-sweep-light {
+  0%   { top: -10%; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 0.6; }
+  100% { top: 110%; opacity: 0; }
+}
+.scan-sweep-container {
+  position: relative;
+  overflow: hidden;
+}
+.scan-sweep-container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.8), rgba(176, 38, 255, 0.6), transparent);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.6), 0 0 24px rgba(0, 240, 255, 0.3);
+  animation: scan-sweep-light 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ─── Cinematic: Letterbox bars ─── */
+@keyframes letterbox-in-top {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(0); }
+}
+@keyframes letterbox-in-bottom {
+  0%   { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+@keyframes letterbox-out-top {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+@keyframes letterbox-out-bottom {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+/* ─── Cinematic: Card border draw ─── */
+@keyframes border-draw {
+  0%   { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0% 0 0); }
+}
+
+/* ─── Cinematic: Particle pop ─── */
+@keyframes particle-pop {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+.animate-particle { animation: particle-pop 0.6s ease-out forwards; }
+
+/* ─── Cinematic: Ambient shimmer ─── */
+@keyframes ambient-shimmer {
+  0%   { opacity: 0.3; transform: translateX(-100%) skewX(-15deg); }
+  100% { opacity: 0; transform: translateX(300%) skewX(-15deg); }
+}
+.animate-shimmer { animation: ambient-shimmer 3.5s ease-in-out infinite; }
+
+/* ─── Cinematic: Fade-up stagger (for menu items) ─── */
+@keyframes fade-up-stagger {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Cinematic: Intro title drop ─── */
+@keyframes title-drop {
+  0%   { opacity: 0; transform: translateY(-60px) scaleY(1.3); filter: blur(8px); }
+  60%  { opacity: 1; transform: translateY(4px) scaleY(0.97); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); filter: blur(0); }
+}
+.animate-title-drop { animation: title-drop 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ─── Cinematic: Intro scanline wipe ─── */
+@keyframes scanline-wipe {
+  0%   { clip-path: inset(0 0 100% 0); }
+  100% { clip-path: inset(0 0 0% 0); }
+}
+.animate-scanline-wipe { animation: scanline-wipe 1.2s cubic-bezier(0.76, 0, 0.24, 1) both; }
+
+/* ─── Cinematic: Lens flare burst ─── */
+@keyframes lens-flare {
+  0%   { opacity: 0; transform: scale(0.2); }
+  30%  { opacity: 1; transform: scale(1.1); }
+  60%  { opacity: 0.6; transform: scale(0.9); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+.animate-lens-flare { animation: lens-flare 1.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ─── Cinematic: Smooth fade-scale in ─── */
+@keyframes fade-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-fade-scale-in { animation: fade-scale-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

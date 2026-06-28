@@ -4,12 +4,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGame, openLevelWithTransition } from "@/lib/game-store";
 import { MENU_ITEMS, PLAYER } from "@/lib/player-data";
 import { COLOR_HEX } from "@/lib/cyber-ui";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Sound } from "@/lib/sound-engine";
 
 export default function MainMenu() {
   const konami = useGame((s) => s.konamiUnlocked);
   const [selected, setSelected] = useState<string | null>(null);
   const [time, setTime] = useState("");
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; color: string }[]>([]);
+  const particleId = useRef(0);
+
+  const spawnParticles = useCallback((x: number, y: number, color: string) => {
+    const newParticles = Array.from({ length: 12 }, () => ({
+      id: particleId.current++,
+      x,
+      y,
+      color,
+    }));
+    setParticles((p) => [...p, ...newParticles]);
+    setTimeout(() => {
+      setParticles((p) => p.filter((pt) => !newParticles.find((n) => n.id === pt.id)));
+    }, 700);
+  }, []);
 
   useEffect(() => {
     const update = () => {
@@ -28,11 +44,17 @@ export default function MainMenu() {
   return (
     <motion.div
       className="relative min-h-screen z-10 px-4 py-6 md:py-10"
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.05, filter: "blur(8px)" }}
-      transition={{ duration: 0.6 }}
+      exit={{ opacity: 0, scale: 1.02 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
+      {/* Particle burst layer */}
+      <div className="fixed inset-0 pointer-events-none z-[300]">
+        {particles.map((p) => (
+          <ParticleBurst key={p.id} x={p.x} y={p.y} color={p.color} />
+        ))}
+      </div>
       {/* Top status bar */}
       <div className="flex items-center justify-between mb-6 md:mb-10 text-[10px] md:text-xs font-mono">
         <div className="flex items-center gap-3">
@@ -136,11 +158,12 @@ export default function MainMenu() {
           </div>
 
           {/* Quick links */}
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2">
             <QuickLink label="GITHUB" href="https://github.com/Anmol954" color="cyan" />
             <QuickLink label="LINKEDIN" href="https://www.linkedin.com/in/anmol-madhav/" color="purple" />
             <QuickLink label="INSTA" href="https://www.instagram.com/anmol_madhav/" color="pink" />
             <QuickLink label="EMAIL" href="mailto:anmolmadhav2004@gmail.com" color="orange" />
+            <QuickLink label="RESUME" href="/resume/resume.pdf" color="green" download />
           </div>
 
           {konami && (
@@ -179,48 +202,78 @@ export default function MainMenu() {
               return (
                 <motion.button
                   key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.05 }}
-                  onMouseEnter={() => setSelected(item.id)}
+                  transition={{
+                    delay: 0.3 + i * 0.06,
+                    duration: 0.5,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  onMouseEnter={() => { setSelected(item.id); Sound.play("menu_hover"); }}
                   onMouseLeave={() => setSelected(null)}
-                  onClick={() => openLevelWithTransition(item.id as never)}
-                  whileHover={{ scale: 1.02, x: 4 }}
-                  whileTap={{ scale: 0.98 }}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    spawnParticles(
+                      rect.left + rect.width / 2,
+                      rect.top + rect.height / 2,
+                      color,
+                    );
+                    Sound.play("menu_confirm");
+                    openLevelWithTransition(item.id as never);
+                  }}
+                  whileHover={{ scale: 1.025, x: 5 }}
+                  whileTap={{ scale: 0.97 }}
                   className="group relative magnetic text-left"
                 >
                   <div
-                    className="glass-panel clip-corner p-4 md:p-5 relative overflow-hidden transition-all duration-300"
+                    className="glass-panel clip-corner p-4 md:p-5 relative overflow-hidden transition-all duration-400"
                     style={{
                       borderColor: isSel ? color : "rgba(0, 240, 255, 0.25)",
                       boxShadow: isSel
-                        ? `0 0 20px ${color}55, inset 0 0 20px ${color}15`
+                        ? `0 0 24px ${color}44, inset 0 0 24px ${color}12`
                         : "0 0 0 transparent",
+                      transition: "border-color 0.3s ease, box-shadow 0.3s ease",
                     }}
                   >
-                    {/* Glow blob */}
-                    <div
-                      className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-30 group-hover:opacity-60 transition-opacity"
+                    {/* Smooth animated glow blob */}
+                    <motion.div
+                      className="absolute -top-10 -right-10 w-36 h-36 rounded-full blur-3xl pointer-events-none"
                       style={{ background: color }}
+                      animate={{ opacity: isSel ? 0.55 : 0.2, scale: isSel ? 1.1 : 1 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
                     />
+
+                    {/* Animated border-draw highlight on hover */}
+                    {isSel && (
+                      <motion.div
+                        className="absolute inset-0 rounded-sm pointer-events-none"
+                        style={{
+                          border: `1px solid ${color}`,
+                          boxShadow: `0 0 12px ${color}66`,
+                        }}
+                        initial={{ opacity: 0, scale: 0.94 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                      />
+                    )}
+
                     {/* Number badge */}
                     <div className="absolute top-3 right-3 text-[10px] font-mono text-cyan-300/40 tracking-widest">
                       {String(i + 1).padStart(2, "0")}
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div
-                        className="text-2xl md:text-3xl font-mono transition-all duration-300 group-hover:scale-110"
-                        style={{
-                          color,
-                          textShadow: `0 0 12px ${color}`,
-                        }}
+                      <motion.div
+                        className="text-2xl md:text-3xl font-mono"
+                        style={{ color, textShadow: `0 0 12px ${color}` }}
+                        animate={{ scale: isSel ? 1.15 : 1 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
                       >
                         {item.icon}
-                      </div>
+                      </motion.div>
                       <div className="flex-1 min-w-0">
                         <div
-                          className="text-base md:text-lg font-bold tracking-wider transition-colors"
+                          className="text-base md:text-lg font-bold tracking-wider transition-colors duration-300"
                           style={{
                             color: isSel ? color : "#e8f0ff",
                             fontFamily: "var(--font-orbitron), monospace",
@@ -234,12 +287,26 @@ export default function MainMenu() {
                       </div>
                     </div>
 
-                    {/* Hover arrow */}
-                    <div
-                      className="absolute bottom-3 right-3 text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1"
+                    {/* Hover arrow — smooth slide in */}
+                    <motion.div
+                      className="absolute bottom-3 right-3 text-xs"
                       style={{ color }}
+                      animate={{ opacity: isSel ? 1 : 0, x: isSel ? 0 : -6 }}
+                      transition={{ duration: 0.2 }}
                     >
                       ▶▶
+                    </motion.div>
+
+                    {/* Ambient shimmer sweep */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                      <div
+                        className="absolute inset-y-0 w-1/4 skew-x-12"
+                        style={{
+                          background: `linear-gradient(90deg, transparent, ${color}18, transparent)`,
+                          animation: `ambient-shimmer ${3 + i * 0.4}s ease-in-out infinite`,
+                          animationDelay: `${i * 0.3}s`,
+                        }}
+                      />
                     </div>
                   </div>
                 </motion.button>
@@ -277,17 +344,19 @@ function VitalBar({ label, value, color }: { label: string; value: number; color
   );
 }
 
-function QuickLink({ label, href, color }: { label: string; href: string; color: "cyan" | "purple" | "orange" | "pink" }) {
-  const colorMap = { cyan: "#00f0ff", purple: "#b026ff", orange: "#ff6a00", pink: "#ff2ec4" };
+function QuickLink({ label, href, color, download }: { label: string; href: string; color: "cyan" | "purple" | "orange" | "pink" | "green"; download?: boolean }) {
+  const colorMap = { cyan: "#00f0ff", purple: "#b026ff", orange: "#ff6a00", pink: "#ff2ec4", green: "#00ff9c" };
   const c = colorMap[color];
   return (
     <a
       href={href}
-      target={href.startsWith("http") ? "_blank" : undefined}
+      target={href.startsWith("http") || href.endsWith(".pdf") ? "_blank" : undefined}
       rel="noopener noreferrer"
+      download={download ? "Anmol_Madhav_Resume.pdf" : undefined}
       className="glass-panel clip-corner-sm p-3 text-center font-mono text-[10px] tracking-widest transition-all hover:scale-105 magnetic"
       style={{ borderColor: `${c}55` }}
       onMouseEnter={(e) => {
+        Sound.play("menu_hover");
         e.currentTarget.style.boxShadow = `0 0 15px ${c}66`;
         e.currentTarget.style.color = c;
       }}
@@ -298,5 +367,49 @@ function QuickLink({ label, href, color }: { label: string; href: string; color:
     >
       {label}
     </a>
+  );
+}
+
+// ─── Particle Burst on click ──────────────────────────────────────────────────
+function ParticleBurst({ x, y, color }: { x: number; y: number; color: string }) {
+  const angles = Array.from({ length: 12 }, (_, i) => (i / 12) * 360);
+  return (
+    <div
+      className="fixed pointer-events-none z-[500]"
+      style={{ left: x, top: y, transform: "translate(-50%, -50%)" }}
+    >
+      {angles.map((angle, i) => {
+        const rad = (angle * Math.PI) / 180;
+        const dist = 40 + Math.random() * 30;
+        const tx = Math.cos(rad) * dist;
+        const ty = Math.sin(rad) * dist;
+        const size = 3 + Math.random() * 4;
+        return (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: size,
+              height: size,
+              background: color,
+              boxShadow: `0 0 ${size * 2}px ${color}`,
+              left: 0,
+              top: 0,
+            }}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+            animate={{
+              x: tx,
+              y: ty,
+              opacity: 0,
+              scale: 0,
+            }}
+            transition={{
+              duration: 0.55 + Math.random() * 0.15,
+              ease: "easeOut",
+            }}
+          />
+        );
+      })}
+    </div>
   );
 }

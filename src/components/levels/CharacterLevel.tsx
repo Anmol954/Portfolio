@@ -49,50 +49,89 @@ export default function CharacterLevel() {
               transition={{ type: "spring", damping: 8 }}
               className="relative"
             >
-              {/* Hexagon frame */}
-              <svg width="160" height="180" viewBox="0 0 160 180" className="mx-auto">
-                <polygon
-                  points="80,5 155,45 155,135 80,175 5,135 5,45"
-                  fill="none"
-                  stroke="#00f0ff"
-                  strokeWidth="2"
-                  style={{ filter: "drop-shadow(0 0 8px #00f0ff)" }}
-                />
-                <polygon
-                  points="80,15 145,50 145,130 80,165 15,130 15,50"
-                  fill="rgba(0,240,255,0.05)"
-                  stroke="rgba(0,240,255,0.3)"
-                  strokeWidth="1"
-                />
-                {/* Avatar silhouette */}
-                <g transform="translate(80, 90)">
-                  <circle cx="0" cy="-25" r="18" fill="none" stroke="#00f0ff" strokeWidth="1.5" />
-                  <path
-                    d="M -28 30 Q -28 5 0 5 Q 28 5 28 30"
+              {/* Hexagon frame with real photo */}
+              <div className="relative mx-auto" style={{ width: 160, height: 180 }}>
+                {/* Photo clipped to hexagon shape */}
+                <div
+                  className="absolute inset-0 overflow-hidden"
+                  style={{
+                    clipPath: "polygon(50% 2%, 96% 26%, 96% 74%, 50% 98%, 4% 74%, 4% 26%)",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/avatar.jpg"
+                    alt="Anmol Madhav"
+                    className="w-full h-full object-cover object-top"
+                    style={{ filter: "saturate(1.1) contrast(1.05)" }}
+                  />
+                  {/* Scan overlay on hover */}
+                  {hovered && (
+                    <motion.div
+                      initial={{ y: "-100%" }}
+                      animate={{ y: "100%" }}
+                      transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-x-0 h-20 pointer-events-none"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, transparent, rgba(0,240,255,0.18), transparent)",
+                      }}
+                    />
+                  )}
+                  {/* Subtle cyan tint overlay */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, rgba(0,240,255,0.04) 0%, transparent 60%, rgba(0,10,20,0.3) 100%)",
+                      mixBlendMode: "screen",
+                    }}
+                  />
+                </div>
+
+                {/* Hexagon border SVG on top */}
+                <svg
+                  width="160"
+                  height="180"
+                  viewBox="0 0 160 180"
+                  className="absolute inset-0 pointer-events-none"
+                >
+                  <polygon
+                    points="80,5 155,45 155,135 80,175 5,135 5,45"
                     fill="none"
                     stroke="#00f0ff"
-                    strokeWidth="1.5"
+                    strokeWidth="2"
+                    style={{ filter: "drop-shadow(0 0 8px #00f0ff)" }}
                   />
-                  {/* Internal grid lines */}
-                  <line x1="-30" y1="-30" x2="30" y2="-30" stroke="rgba(0,240,255,0.3)" strokeWidth="0.5" />
-                  <line x1="-30" y1="0" x2="30" y2="0" stroke="rgba(0,240,255,0.3)" strokeWidth="0.5" />
-                  <line x1="-30" y1="30" x2="30" y2="30" stroke="rgba(0,240,255,0.3)" strokeWidth="0.5" />
-                </g>
-                {/* Corner accents */}
-                <text x="80" y="195" textAnchor="middle" fill="#00f0ff" fontSize="9" fontFamily="monospace" letterSpacing="2">
-                  ID::0xAM001
-                </text>
-              </svg>
-              {/* Scanning line */}
-              {hovered && (
-                <motion.div
-                  initial={{ top: "10%" }}
-                  animate={{ top: "85%" }}
-                  transition={{ duration: 1.2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-                  className="absolute left-1/2 -translate-x-1/2 w-[140px] h-0.5 bg-cyan-400"
-                  style={{ boxShadow: "0 0 8px #00f0ff" }}
-                />
-              )}
+                  <polygon
+                    points="80,12 148,48 148,132 80,168 12,132 12,48"
+                    fill="none"
+                    stroke="rgba(0,240,255,0.25)"
+                    strokeWidth="1"
+                  />
+                  {/* Corner tick marks */}
+                  {[[80,5],[155,45],[155,135],[80,175],[5,135],[5,45]].map(([x,y],i) => (
+                    <circle key={i} cx={x} cy={y} r="2.5" fill="#00f0ff"
+                      style={{ filter: "drop-shadow(0 0 4px #00f0ff)" }} />
+                  ))}
+                  {/* ID label below hex */}
+                  <text x="80" y="195" textAnchor="middle" fill="#00f0ff" fontSize="9"
+                    fontFamily="monospace" letterSpacing="2">
+                    ID::0xAM001
+                  </text>
+                </svg>
+
+                {/* Scanning line on hover */}
+                {hovered && (
+                  <motion.div
+                    initial={{ top: "10%" }}
+                    animate={{ top: "85%" }}
+                    transition={{ duration: 1.2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                    className="absolute left-1/2 -translate-x-1/2 w-[130px] h-0.5 bg-cyan-400 pointer-events-none"
+                    style={{ boxShadow: "0 0 8px #00f0ff" }}
+                  />
+                )}
+              </div>
             </motion.div>
 
             <div

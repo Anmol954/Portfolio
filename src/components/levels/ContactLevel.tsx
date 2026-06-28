@@ -93,6 +93,89 @@ export default function ContactLevel() {
             </div>
           </div>
 
+          {/* ── RESUME DOWNLOAD ── */}
+          <motion.a
+            href="/resume/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            download="Anmol_Madhav_Resume.pdf"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="group relative magnetic block"
+          >
+            <div
+              className="glass-panel clip-corner p-4 md:p-5 relative overflow-hidden"
+              style={{
+                borderColor: "rgba(255,106,0,0.5)",
+                boxShadow: "0 0 20px rgba(255,106,0,0.15), inset 0 0 20px rgba(255,106,0,0.05)",
+              }}
+            >
+              {/* Animated shimmer */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div
+                  className="absolute inset-y-0 w-1/3 skew-x-12 animate-shimmer"
+                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,106,0,0.15), transparent)" }}
+                />
+              </div>
+              {/* Glow blob */}
+              <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-3xl pointer-events-none"
+                style={{ background: "rgba(255,106,0,0.2)" }} />
+
+              <div className="flex items-center gap-4 relative z-10">
+                {/* Icon */}
+                <div
+                  className="w-12 h-12 flex-shrink-0 flex items-center justify-center clip-corner-sm text-xl font-bold"
+                  style={{
+                    background: "rgba(255,106,0,0.15)",
+                    border: "1px solid rgba(255,106,0,0.5)",
+                    color: "#ff6a00",
+                    boxShadow: "0 0 12px rgba(255,106,0,0.3)",
+                  }}
+                >
+                  ↓
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] font-mono tracking-[0.3em] mb-0.5"
+                    style={{ color: "rgba(255,106,0,0.7)" }}>
+                    ▸ CLASSIFIED DOCUMENT
+                  </div>
+                  <div
+                    className="text-base md:text-lg font-black tracking-wider"
+                    style={{
+                      fontFamily: "var(--font-orbitron), monospace",
+                      color: "#ff6a00",
+                      textShadow: "0 0 10px rgba(255,106,0,0.6)",
+                    }}
+                  >
+                    DOWNLOAD RESUME
+                  </div>
+                  <div className="text-[10px] font-mono mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    Anmol_Madhav_Resume.pdf · CLEARANCE LEVEL: PUBLIC
+                  </div>
+                </div>
+                {/* Arrow */}
+                <motion.div
+                  className="text-lg font-bold flex-shrink-0"
+                  style={{ color: "#ff6a00" }}
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  ▶
+                </motion.div>
+              </div>
+            </div>
+            {/* Outer glow ring */}
+            <motion.div
+              className="absolute -inset-1 clip-corner pointer-events-none border"
+              style={{ borderColor: "rgba(255,106,0,0.2)" }}
+              animate={{ borderColor: ["rgba(255,106,0,0.2)", "rgba(255,106,0,0.5)", "rgba(255,106,0,0.2)"] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.a>
+
           {/* Status */}
           <div className="glass-panel-purple clip-corner p-4 flex items-center gap-3">
             <div className="relative">

@@ -7,7 +7,7 @@
 export const PLAYER = {
   name: "ANMOL MADHAV",
   handle: "Anmol954",
-  level: 21,
+  level: 22,
   class: "DATA ANALYST // AI ENGINEER",
   xp: 15000,
   mission: "Building AI that solves real problems — Data Science, ML & Agentic AI.",

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/lib/game-store";
+import { Sound } from "@/lib/sound-engine";
 
 const SEQUENCE = [
   "INITIALIZING PLAYER...",
@@ -21,6 +22,7 @@ export default function LoadingScreen() {
 
   useEffect(() => {
     let p = 0;
+    let lastStep = -1;
     const id = setInterval(() => {
       p += Math.random() * 8 + 3;
       if (p >= 100) {
@@ -35,6 +37,10 @@ export default function LoadingScreen() {
         SEQUENCE.length - 1,
         Math.floor((p / 100) * SEQUENCE.length)
       );
+      if (newStep !== lastStep) {
+        Sound.play("boot_beep");
+        lastStep = newStep;
+      }
       setStep(newStep);
     }, 180);
     return () => clearInterval(id);
